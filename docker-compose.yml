@@ -1,0 +1,27 @@
+version: "3.7"
+
+networks:
+  backend:
+    name: go-backend
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    networks:
+      - backend
+
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
