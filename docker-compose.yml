@@ -10,18 +10,24 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - 8000:8000
     expose:
       - 8000
     networks:
       - backend
-
+    env_file:
+      - env
     depends_on:
-      - redis
+      - db
 
-  redis:
-    image: redis:latest
+  db:
+    image: postgres:latest
     ports:
-      - "6379:6379"
+      - 7432:5432
+    expose:
+      - 5432
+    restart: on-failure
     networks:
       - backend
+    env_file:
+      - .env
