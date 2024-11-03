@@ -5,6 +5,21 @@ import (
 	"net/http"
 )
 
+func RegisterTodoRoutes(DB *db.Database) *http.ServeMux {
+	todoController := &TodoController{
+		DB: DB,
+	}
+
+	todoMux := http.NewServeMux()
+	todoMux.HandleFunc("POST /{$}", todoController.CreateTodo)
+	todoMux.HandleFunc("GET /{id}", todoController.GetTodoById)
+	todoMux.HandleFunc("PUT /{id}", todoController.UpdateTodoById)
+	todoMux.HandleFunc("DELETE /{id}", todoController.DeleteTodoById)
+	todoMux.HandleFunc("GET /{$}", todoController.GetAllTodos)
+
+	return todoMux
+}
+
 type TodoController struct {
 	DB *db.Database
 }
@@ -14,7 +29,7 @@ func (t *TodoController) CreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (t *TodoController) GetTodoById(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Get Todo"))
+	w.Write([]byte("Get Todo By Id"))
 }
 
 func (t *TodoController) UpdateTodoById(w http.ResponseWriter, r *http.Request) {
