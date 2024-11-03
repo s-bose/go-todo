@@ -1,9 +1,16 @@
 package main
 
 import (
-	"fmt"
+	todo "go-todo/app/controllers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println("hello world")
+	r := gin.Default()
+	todo.Test2()
+	r.Group("/api")
+	{
+
+	}
 }
