@@ -12,8 +12,18 @@ type UserService struct {
 	db *gorm.DB
 }
 
-func (r *UserService) CreateUser(user *models.User) error {
-	return r.db.Create(&user).Error
+func (r *UserService) CreateUser(user *models.User) (*models.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = string(hashedPassword)
+	err = r.db.Create(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *UserService) GetUserById(id uuid.UUID) (*models.User, error) {
