@@ -15,10 +15,18 @@ services:
       - 8000
     networks:
       - backend
-    env_file:
-      - env
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT
     depends_on:
       - db
+    volumes:
+      - ./:/app
+
+    command: ["./wait-for-it.sh", "db:5432", "--", "air"]
 
   db:
     image: postgres:latest
@@ -29,5 +37,7 @@ services:
     restart: on-failure
     networks:
       - backend
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
