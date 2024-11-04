@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"go-todo/app/auth"
+	"go-todo/app/db"
 	"go-todo/app/models"
 	"go-todo/app/services"
 	"go-todo/app/utils"
-	"go-todo/db"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func RegisterUserRoutes(DB *db.Database) *http.ServeMux {
@@ -19,7 +22,7 @@ func RegisterUserRoutes(DB *db.Database) *http.ServeMux {
 	}
 
 	userMux := http.NewServeMux()
-	userMux.HandleFunc("GET /{$}", userController.GetUser)
+	userMux.HandleFunc("GET /{$}", auth.JWTMiddleware(userController.GetUser, DB))
 	userMux.HandleFunc("POST /register", userController.RegisterUser)
 	userMux.HandleFunc("POST /login", userController.LoginUser)
 
@@ -84,9 +87,29 @@ func (u *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, userDb)
+	accessToken, err := auth.CreateJWT(&userDb.ID)
+
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.Dict{"message": "error creating access token", "error": err.Error()})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	utils.WriteJSON(w, http.StatusOK, utils.Dict{"access_token": accessToken})
 }
 
 func (u *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Get User"))
+	userID, ok := r.Context().Value("userID").(uuid.UUID)
+	if !ok {
+		utils.WriteJSON(w, http.StatusUnauthorized, utils.Dict{"message": "unauthorized"})
+		return
+	}
+
+	user, err := u.userService.GetUserById(userID)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusNotFound, utils.Dict{"message": "user not found"})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, user)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type ClaimsPayload struct {
+type UserClaims struct {
 	UserID string `json:"user_id"`
 	jwt.StandardClaims
 }
@@ -21,7 +21,7 @@ func GetToken(r *http.Request) (string, error) {
 
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 && parts[0] != "Bearer" {
-		return "", fmt.Errorf("invalid authorization rheader")
+		return "", fmt.Errorf("invalid authorization header")
 	}
 
 	authToken := strings.TrimSpace(parts[1])
@@ -29,7 +29,7 @@ func GetToken(r *http.Request) (string, error) {
 }
 
 func ValidateJWT(token string) (*jwt.Token, error) {
-	return jwt.ParseWithClaims(token, &ClaimsPayload{}, func(t *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(token, &UserClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
@@ -41,7 +41,7 @@ func ValidateJWT(token string) (*jwt.Token, error) {
 func CreateJWT(userID *uuid.UUID) (string, error) {
 	duration := time.Second * time.Duration(config.Config.JWTExpirationSeconds)
 
-	payload := &ClaimsPayload{
+	payload := &UserClaims{
 		UserID: userID.String(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(duration).Unix(),

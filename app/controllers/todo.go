@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"go-todo/db"
+	"go-todo/app/db"
 	"net/http"
 )
 

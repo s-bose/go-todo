@@ -2,7 +2,7 @@ package main
 
 import (
 	"go-todo/app/controllers"
-	"go-todo/db"
+	"go-todo/app/db"
 	"log"
 	"net/http"
 )

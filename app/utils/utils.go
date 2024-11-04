@@ -20,3 +20,5 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 
 	return json.NewEncoder(w).Encode(v)
 }
+
+type Dict map[string]any
