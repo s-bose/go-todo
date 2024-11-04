@@ -29,7 +29,7 @@ func (u *UserService) CreateUser(user *models.User) (*models.User, error) {
 
 func (u *UserService) GetUserById(id uuid.UUID) (*models.User, error) {
 	var user models.User
-	if err := u.Db.Where(&models.User{ID: id}).First(&user).Error; err != nil {
+	if err := u.Db.Where(&models.User{ID: id}).First(&user).Preload("Todos").Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -56,3 +56,14 @@ func (u *UserService) GetAuthenticatedUser(email string, password string) (*mode
 
 	return user, nil
 }
+
+// func (u *UserService) GetAllTodosByUser(userID uuid.UUID, filters interface{}) ([]models.Todo, error) {
+// 	user, err := u.GetUserById(userID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	u.Db.Where(&models.User{ID: userID}).First(&user).Preload("Todos").Find()
+
+// 	return user.Todos, nil
+// }
