@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"go-todo/app/auth"
 	"go-todo/app/db"
 	"go-todo/app/enums"
@@ -52,8 +51,6 @@ func (t *TodoController) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, ok := r.Context().Value("userID").(uuid.UUID)
-	fmt.Println("New Todo", newTodo.Priority, newTodo.Status, newTodo.Title, newTodo.Description)
-	fmt.Print("Priority ::: ", enums.PriorityType(newTodo.Priority))
 
 	if !ok {
 		utils.WriteJSON(w, http.StatusUnauthorized, utils.Dict{"message": "unauthorized"})
