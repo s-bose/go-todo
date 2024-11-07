@@ -13,18 +13,23 @@ type UserService struct {
 	Db *gorm.DB
 }
 
-func (u *UserService) CreateUser(user *models.User) (*models.User, error) {
+func (u *UserService) CreateUser(user *models.UserCreate) (*models.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
 	user.Password = string(hashedPassword)
-	err = u.Db.Create(&user).Error
+	userDb := &models.User{
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+	}
+	err = u.Db.Create(userDb).Error
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return userDb, nil
 }
 
 func (u *UserService) GetUserById(id uuid.UUID) (*models.User, error) {
@@ -56,14 +61,3 @@ func (u *UserService) GetAuthenticatedUser(email string, password string) (*mode
 
 	return user, nil
 }
-
-// func (u *UserService) GetAllTodosByUser(userID uuid.UUID, filters interface{}) ([]models.Todo, error) {
-// 	user, err := u.GetUserById(userID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	u.Db.Where(&models.User{ID: userID}).First(&user).Preload("Todos").Find()
-
-// 	return user.Todos, nil
-// }

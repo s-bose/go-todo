@@ -42,21 +42,10 @@ func (r *TodoService) UpdateTodoById(id uuid.UUID, title, description string, pr
 		return nil, err
 	}
 
-	if title != "" {
-		todo.Title = title
-	}
-
-	if description != "" {
-		todo.Description = description
-	}
-
-	if priority != "" {
-		todo.Priority = priority
-	}
-
-	if status != "" {
-		todo.Status = status
-	}
+	todo.Title = title
+	todo.Description = description
+	todo.Priority = priority
+	todo.Status = status
 
 	err = r.Db.Save(todo).Error
 	if err != nil {

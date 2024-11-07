@@ -34,31 +34,16 @@ type UserController struct {
 	userService *services.UserService
 }
 
-type RegisterUserSchema struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type LoginUserSchema struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func (u *UserController) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	var user RegisterUserSchema
+	var user models.UserCreate
 
-	err := utils.ParseJSON(r, &user)
+	err := utils.ValidateJSON(r, &user)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	createdUser, e := u.userService.CreateUser(&models.User{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
-	})
+	createdUser, e := u.userService.CreateUser(&user)
 
 	if e != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, e)
@@ -71,9 +56,9 @@ func (u *UserController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var user LoginUserSchema
+	var user models.UserLogin
 
-	err := utils.ParseJSON(r, &user)
+	err := utils.ValidateJSON(r, &user)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, err)
 		return
@@ -88,7 +73,6 @@ func (u *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accessToken, err := auth.CreateJWT(&userDb.ID)
-
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Dict{"message": "error creating access token", "error": err.Error()})
 		return
