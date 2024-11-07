@@ -40,6 +40,7 @@ func JWTMiddleware(handlerFunc http.HandlerFunc, DB *db.Database) http.HandlerFu
 		user, err := userService.GetUserById(uuid.MustParse(userID))
 		if err != nil {
 			utils.WriteJSON(w, http.StatusUnauthorized, utils.Dict{"message": "unauthorized", "error": err.Error()})
+			return
 		}
 
 		ctx := r.Context()

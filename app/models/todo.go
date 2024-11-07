@@ -8,7 +8,7 @@ import (
 )
 
 type Todo struct {
-	ID          uint               `json:"id" gorm:"primaryKey;autoIncrement"`
+	ID          uuid.UUID          `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	UserID      uuid.UUID          `json:"user_id"`
 	Title       string             `json:"title"`
 	Description string             `json:"description"`
