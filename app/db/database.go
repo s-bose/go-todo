@@ -59,3 +59,14 @@ func InitDatabase() (*Database, error) {
 	}
 	return &database, nil
 }
+
+func (d *Database) CloseDatabase() error {
+	sqlDB, err := d.Db.DB()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	sqlDB.Close()
+	return nil
+}

@@ -23,4 +23,6 @@ func main() {
 	router.Handle("/api/v1/todos/", http.StripPrefix("/api/v1/todos", controllers.RegisterTodoRoutes(database)))
 
 	http.ListenAndServe(":8000", router)
+
+	defer database.CloseDatabase()
 }
