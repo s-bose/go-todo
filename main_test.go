@@ -27,6 +27,6 @@ func TestMain(m *testing.M) {
 			"POSTGRES_PASSWORD=postgres",
 			"POSTGRES_DB=postgres",
 			"listen_addresses = '*'",
-		},
+		}, func(config *docker.HostConfig) {}
 	})
 }
